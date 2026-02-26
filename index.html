@@ -1,29 +1,65 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="pt-BR">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TRO AI</title>
+  <style>
+    body { font-family: Inter, system-ui, Arial; background:#071028; color:#e6f0ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+    .card { background: rgba(10,18,40,0.85); padding:24px; border-radius:12px; width:420px; box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+    input, textarea { width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.03); color:#fff; }
+    button { margin-top:10px; width:100%; padding:10px; border-radius:8px; border:0; background:#00b3ff; color:#012; font-weight:700; cursor:pointer; }
+    .reply { margin-top:12px; white-space:pre-wrap; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; min-height:60px; }
+    .small { font-size:12px; color:#9fb7d6; margin-top:6px; }
+  </style>
 </head>
 <body>
-  <h1>🔥 TRO AI</h1>
-
-  <input type="text" id="input" placeholder="Pergunte algo..." />
-  <button onclick="send()">Enviar</button>
-
-  <p id="response"></p>
+  <div class="card">
+    <h2>TRO AI 🤖</h2>
+    <div class="small">Pede qualquer coisa de programação — eu respondo de forma divertida e didática.</div>
+    <textarea id="prompt" rows="4" placeholder="Escreve sua pergunta aqui... por exemplo: 'Como crio um loop em Lua?'" ></textarea>
+    <button id="sendBtn">Enviar</button>
+    <div class="reply" id="reply">Resposta vai aparecer aqui...</div>
+  </div>
 
 <script>
-async function send() {
-  const message = document.getElementById("input").value;
+(async () => {
+  // Se estiver testando localmente com o backend rodando na mesma máquina, pode usar '/chat'.
+  // Se você subir o backend em outro lugar (Render/Replit), substitua pela URL completa:
+  // const API_ENDPOINT = "https://seu-backend.onrender.com/chat";
+  const API_ENDPOINT = "/chat";
 
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message })
+  const sendBtn = document.getElementById("sendBtn");
+  const promptEl = document.getElementById("prompt");
+  const replyEl = document.getElementById("reply");
+
+  sendBtn.addEventListener("click", async () => {
+    const msg = promptEl.value.trim();
+    if(!msg) return alert("Escreve algo primeiro :)");
+
+    replyEl.textContent = "TRO AI pensando... 🤔";
+    sendBtn.disabled = true;
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+      if(!res.ok) {
+        const err = await res.json().catch(()=>null);
+        replyEl.textContent = "Erro: " + (err?.error||res.statusText);
+      } else {
+        const data = await res.json();
+        replyEl.textContent = data.reply || "Sem resposta do servidor";
+      }
+    } catch (e) {
+      replyEl.textContent = "Erro de rede. Certifique-se que o backend está rodando.";
+    } finally {
+      sendBtn.disabled = false;
+    }
   });
-
-  const data = await res.json();
-  document.getElementById("response").innerText = data.reply;
-}
+})();
 </script>
 </body>
 </html>
