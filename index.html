@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TRO AI</title>
+</head>
+<body>
+  <h1>🔥 TRO AI</h1>
+
+  <input type="text" id="input" placeholder="Pergunte algo..." />
+  <button onclick="send()">Enviar</button>
+
+  <p id="response"></p>
+
+<script>
+async function send() {
+  const message = document.getElementById("input").value;
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+  document.getElementById("response").innerText = data.reply;
+}
+</script>
+</body>
+</html>
