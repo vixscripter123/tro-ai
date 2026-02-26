@@ -19,8 +19,8 @@ app.post("/chat", async (req, res) => {
     const userMessage = req.body.message;
     if (!userMessage) return res.status(400).json({ error: "mensagem vazia" });
 
-    const apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "DEEPSEEK_API_KEY não configurada" });
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: "OPENROUTER_API_KEY não configurada" });
 
     const resp = await fetch("https://api.deepseek.com/v1/chat/completions", {
       method: "POST",
