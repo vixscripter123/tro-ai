@@ -22,28 +22,28 @@ app.post("/chat", async (req, res) => {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) return res.status(500).json({ error: "OPENROUTER_API_KEY não configurada" });
 
-    const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        temperature: 0.7,
-        top_p: 0.9,
-        messages: [
-          {
-            role: "system",
-            content: `Você é a TRO AI.
+const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${apiKey}`,
+    "HTTP-Referer": "https://seusite.github.io", 
+    "X-Title": "TRO AI"
+  },
+  body: JSON.stringify({
+    model: "mistralai/mistral-7b-instruct:free",
+    messages: [
+      {
+        role: "system",
+        content: `Você é a TRO AI.
 Especialista em programação.
 Ajude iniciantes e profissionais.
 Seja divertida, didática e não incentive nada ilegal.`
-          },
-          { role: "user", content: userMessage }
-        ]
-      })
-    });
+      },
+      { role: "user", content: userMessage }
+    ]
+  })
+});
 
     const data = await resp.json();
 
